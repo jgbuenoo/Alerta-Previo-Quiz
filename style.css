@@ -1,0 +1,87 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #e0f7f7;
+    margin: 0;
+    padding: 0;
+    color: #004d4d;
+}
+
+.tela {
+    padding: 20px;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.tela.show {
+    display: block;
+    opacity: 1;
+}
+
+h1, h2, p {
+    color: #006666;
+}
+
+img {
+    max-width: 80%;
+    margin: 10px 0;
+    border-radius: 8px;
+}
+
+button {
+    background-color: #009999;
+    color: white;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #007777;
+}
+
+label {
+    display: block;
+    text-align: left;
+    margin: 10px auto;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f0fafa;
+    border: 2px solid transparent;
+    max-width: 300px;
+    transition: all 0.3s ease;
+}
+
+.acerto {
+    background-color: #c8f7c5;
+    border-color: #2ecc71;
+    animation: certoFlash 0.5s ease forwards;
+}
+
+.erro {
+    background-color: #f8d7da;
+    border-color: #e74c3c;
+    animation: erroFlash 0.5s ease forwards;
+}
+
+@keyframes certoFlash {
+    0% { background-color: #c8f7c5; }
+    50% { background-color: #a8e6a3; }
+    100% { background-color: #c8f7c5; }
+}
+
+@keyframes erroFlash {
+    0% { background-color: #f8d7da; }
+    50% { background-color: #f5b7b1; }
+    100% { background-color: #f8d7da; }
+}
+
+#vidas img {
+    width: 30px;
+    margin: 0 2px;
+}

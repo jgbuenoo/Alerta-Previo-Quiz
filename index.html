@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Quiz Alerta Prévio</title>
+<style>
+    body {
+        background-color: #d0f2f0;
+        font-family: Arial, sans-serif;
+        text-align: center;
+        color: #004d4d;
+    }
+    button {
+        padding: 10px 20px;
+        margin: 10px;
+        border-radius: 8px;
+        background-color: #00bfa5;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+    #vidas img {
+        width: 30px;
+        margin: 2px;
+    }
+    .acerto {
+        background-color: #a5d6a7 !important;
+        transition: background-color 0.5s;
+    }
+    .erro {
+        background-color: #ef9a9a !important;
+        transition: background-color 0.5s;
+    }
+    label {
+        display: block;
+        margin: 10px 0;
+        padding: 8px;
+        border-radius: 5px;
+        background-color: #b2dfdb;
+        cursor: pointer;
+    }
+    img {
+        max-width: 80%;
+        margin: 10px 0;
+        border-radius: 8px;
+    }
+    .tela {
+        display: none;
+    }
+</style>
+</head>
+<body>
+
+<div id="tela-menu" class="tela" style="display:block;">
+    <h1>Alerta Prévio - Quiz</h1>
+    <h2>Escolha a Dificuldade:</h2>
+    <button onclick="selecionarDificuldade('facil')">Fácil</button>
+    <button onclick="selecionarDificuldade('medio')">Médio</button>
+    <button onclick="selecionarDificuldade('dificil')">Difícil</button>
+</div>
+
+<div id="tela-inicial" class="tela">
+    <h2>Pronto para começar?</h2>
+    <button onclick="mostrarPergunta(0)">Iniciar Jogo</button>
+    <div id="vidas"></div>
+</div>
+
+<div id="tela-pergunta" class="tela">
+    <div id="vidas"></div>
+    <p id="pergunta-texto"></p>
+    <img id="pergunta-imagem" src="imgPerguntas.png">
+    <form id="form-opcoes"></form>
+    <button onclick="verificarResposta()">Responder</button>
+</div>
+
+<div id="tela-gameover" class="tela">
+    <h2>Game Over 😢</h2>
+    <button onclick="reiniciarQuiz()">Jogar Novamente</button>
+</div>
+
+<script>
+const perguntas = [
+    {
+        texto: "O que fazer ao encontrar alguém inconsciente?",
+        imagem: src="imagens/inconsciente.jpg",
+        opcoes: ["Sacudir a pessoa", "Verificar se está respirando", "Dar água", "Chamar um parente"],
+        correta: 1
+    },
+    {
+        texto: "Número dos Bombeiros?",
+        imagem: src="imagens/bombeiro.avif",
+        opcoes: ["190", "192", "193", "199"],
+        correta: 2
+    },
+    {
+        texto: "O que fazer em caso de engasgo em adultos?",
+        imagem: src="imagens/engasgo.jpg",
+        opcoes: ["Colocar de cabeça pra baixo", "Tapinhas nas costas", "Manobra de Heimlich", "Dar água"],
+        correta: 2
+    },
+    {
+        texto: "Primeiro passo em hemorragia intensa?",
+        imagem: src="imagens/img.hemorragia.jpg",
+        opcoes: ["Chamar o SAMU", "Compressão direta", "Dar água", "Esperar ajuda"],
+        correta: 1
+    },
+    {
+        texto: "Queimadura leve, o que fazer?",
+        imagem: src="imagens/queimadura.jpg",
+        opcoes: ["Passar manteiga", "Lavar com água corrente", "Colocar gelo", "Usar pasta de dente"],
+        correta: 1
+    },
+    {
+        texto: "Vítima inconsciente respirando, qual posição?",
+        imagem: src="imagens/inconsciente.jpg",
+        opcoes: ["De pé", "Sentada", "Lateral de segurança", "De bruços"],
+        correta: 2
+    },
+    {
+        texto: "Parada cardiorrespiratória, o que fazer?",
+        imagem: src="imagens/paradaCardiorrespiratória.avif",   
+        opcoes: ["Ventilar", "Compressões torácicas", "Dar água", "Chamar familiares"],
+        correta: 1
+    },
+    {
+        texto: "Primeiro passo ao presenciar um acidente?",
+        imagem: src="imagens/acidente.png",
+        opcoes: ["Ligar emergência", "Tocar na vítima", "Gravar com celular", "Sair do local"],
+        correta: 0
+    },
+    {
+        texto: "Compressões por minuto na RCP?",
+        imagem: src="imagens/RCP.jpg",
+        opcoes: ["50-60", "100-120", "150-180", "200+"],
+        correta: 1
+    },
+    {
+        texto: "O que NÃO fazer em fratura exposta?",
+        imagem: src="imagens/fraturaExterna.png",
+        opcoes: ["Imobilizar", "Tentar colocar o osso no lugar", "Cobrir com pano limpo", "Chamar ajuda"],
+        correta: 1
+    }
+];
+
+let dificuldade = "";
+let vidas = 0;
+let perguntaAtual = 0;
+let acertosSeguidos = 0;
+const maxVidas = 5;
+
+function selecionarDificuldade(nivel) {
+    dificuldade = nivel;
+    vidas = nivel === "facil" ? 5 : nivel === "medio" ? 3 : 1;
+    document.getElementById("tela-menu").style.display = "none";
+    document.getElementById("tela-inicial").style.display = "block";
+    atualizarVidas();
+}
+
+function atualizarVidas() {
+    const divVidas = document.getElementById("vidas");
+    divVidas.innerHTML = "";
+    for (let i = 0; i < vidas; i++) {
+        divVidas.innerHTML += '<img src="/imagens/coracao_vermelho.png">';
+    }
+    for (let i = vidas; i < maxVidas; i++) {
+        divVidas.innerHTML += '<img src="/imagens/coracao_branco.png">';
+    }
+}
+
+function mostrarPergunta(index) {
+    document.querySelectorAll('.tela').forEach(t => t.style.display = 'none');
+    document.getElementById("tela-pergunta").style.display = "block";
+    atualizarVidas();
+
+    const pergunta = perguntas[index % perguntas.length];
+    document.getElementById("pergunta-texto").innerText = pergunta.texto;
+    document.getElementById("pergunta-imagem").src = pergunta.imagem;
+
+    const form = document.getElementById("form-opcoes");
+    form.innerHTML = "";
+
+    pergunta.opcoes.forEach((opcao, i) => {
+        form.innerHTML += `<label id="opcao-${i}"><input type="radio" name="opcao" value="${i}"> ${opcao}</label>`;
+    });
+}
+
+function verificarResposta() {
+    const opcoes = document.getElementsByName("opcao");
+    let selecionada = -1;
+    for (let i = 0; i < opcoes.length; i++) {
+        if (opcoes[i].checked) selecionada = parseInt(opcoes[i].value);
+    }
+    if (selecionada === -1) {
+        alert("Selecione uma opção!");
+        return;
+    }
+
+    const correta = perguntas[perguntaAtual % perguntas.length].correta;
+
+    // Limpa estilos anteriores
+    for (let i = 0; i < opcoes.length; i++) {
+        document.getElementById(`opcao-${i}`).classList.remove('acerto', 'erro');
+    }
+
+    if (selecionada === correta) {
+        document.getElementById(`opcao-${selecionada}`).classList.add('acerto');
+        acertosSeguidos++;
+        if (acertosSeguidos % 7 === 0 && vidas < maxVidas) vidas++;
+    } else {
+        document.getElementById(`opcao-${selecionada}`).classList.add('erro');
+        vidas--;
+        acertosSeguidos = 0;
+    }
+
+    atualizarVidas();
+
+    setTimeout(() => {
+        if (vidas <= 0) {
+            document.querySelectorAll('.tela').forEach(t => t.style.display = 'none');
+            document.getElementById("tela-gameover").style.display = "block";
+        } else {
+            perguntaAtual++;
+            mostrarPergunta(perguntaAtual);
+        }
+    }, 800);
+}
+
+function reiniciarQuiz() {
+    perguntaAtual = 0;
+    acertosSeguidos = 0;
+    vidas = 0;
+    dificuldade = "";
+    document.querySelectorAll('.tela').forEach(t => t.style.display = 'none');
+    document.getElementById("tela-menu").style.display = "block";
+}
+</script>
+
+</body>
+</html>
